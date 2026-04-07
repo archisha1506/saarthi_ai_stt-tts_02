@@ -1,17 +1,21 @@
 import asyncio
 import websockets
-import openai_whisper as whisper
+
 import os
 import numpy as np
 import edge_tts
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
+from faster_whisper import WhisperModel
+
+
 load_dotenv()
 # -----------------------------
 # Load models (only once)
 # -----------------------------
 print("Loading Whisper model...")
-stt_model = whisper.load_model("base")
+model = WhisperModel("base", device="cpu", compute_type="int8")
+# stt_model = whisper.load_model("base")
 
 # -----------------------------
 # Dummy LangGraph (replace later)
