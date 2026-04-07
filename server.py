@@ -1,10 +1,12 @@
 import asyncio
 import websockets
-import whisper
+import openai_whisper as whisper
 import os
 import numpy as np
 import edge_tts
-
+from langchain_groq import ChatGroq
+from dotenv import load_dotenv
+load_dotenv()
 # -----------------------------
 # Load models (only once)
 # -----------------------------
@@ -18,9 +20,13 @@ def call_langgraph(user_text):
     print("Sending to LangGraph:", user_text)
     
     # Replace this with your real LangGraph
-    response = f"winter is coming -> {user_text}"
+    response = f"testing the pipeline without external langgraph -> {user_text}"
     
     return response
+
+llm= ChatGroq(
+    model='llama-3.3-70b-versatile'
+)    
 
 # -----------------------------
 # Convert audio buffer to text
@@ -39,7 +45,7 @@ def speech_to_text(audio_bytes):
 async def text_to_speech(text, output_file):
     communicate = edge_tts.Communicate(text, "en-US-AriaNeural")
     await communicate.save(output_file)
-
+audio_text=""
 # -----------------------------
 # WebSocket handler
 # -----------------------------
@@ -69,6 +75,7 @@ async def handler(websocket):
                 # -----------------------------
                 text = speech_to_text(audio_bytes)
                 print("User said:", text)
+                audio_text=llm.invoke(text)
 
                 # Send transcript (optional)
                 await websocket.send(f"TRANSCRIPT:{text}")
@@ -76,7 +83,7 @@ async def handler(websocket):
                 # -----------------------------
                 # LangGraph
                 # -----------------------------
-                response_text = call_langgraph(text)
+                response_text = call_langgraph(audio_text)
                 print("AI response:", response_text)
 
                 # -----------------------------
