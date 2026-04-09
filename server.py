@@ -1,5 +1,7 @@
 import asyncio
 import websockets
+# NOTE: This is the WebSocket-based implementation (web browser frontend)
+# For a direct PyAudio implementation (microphone input, CLI-based), see: server_pyaudio.py
 
 import os
 import numpy as np
